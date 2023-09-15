@@ -4,7 +4,7 @@ use crate::state::{GlobalRegistryParams, GlobalRegistryState};
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init, payer = signer, space = 8)]
+    #[account(init,seeds = [ b"global-registry"], payer = signer, space = 8, bump)]
     pub state: Account<'info, GlobalRegistryState>,
     #[account(mut)]
     pub signer: Signer<'info>,

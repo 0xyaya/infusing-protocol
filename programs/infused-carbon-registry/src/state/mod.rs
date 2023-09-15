@@ -1,3 +1,3 @@
-mod info;
+mod global_registry;
 
-pub use info::*;
+pub use global_registry::*;
