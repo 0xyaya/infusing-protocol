@@ -1,0 +1,15 @@
+[features]
+seeds = false
+skip-lint = false
+[programs.localnet]
+infused_carbon_registry = "3g3YSqpjbWGYSSGTEVhP3jLavuLpH3toyE6zgMUrzzoC"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "/home/yann/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
