@@ -4,7 +4,7 @@ use crate::state::{GlobalRegistryParams, GlobalRegistryState};
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init,seeds = [ b"global-registry"], payer = signer, space = 8, bump)]
+    #[account(init,seeds = [ b"global-registry"], payer = signer, space = 136, bump)]
     pub state: Account<'info, GlobalRegistryState>,
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -16,7 +16,8 @@ pub fn initialize_handler(ctx: Context<Initialize>, params: GlobalRegistryParams
     let state = &mut ctx.accounts.state;
     state.holding_account = params.holding_account;
     state.fees_account = params.fees_account;
-    state.ctt_mint = params.ctt_mint;
-    state.nct_mint = params.nct_mint;
+    // state.ctt_mint = params.ctt_mint;
+    // state.nct_mint = params.nct_mint;
+    state.feed_staleness_threshold = params.feed_staleness_threshold;
     Ok(())
 }
