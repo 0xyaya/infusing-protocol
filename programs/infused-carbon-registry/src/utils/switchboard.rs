@@ -23,7 +23,7 @@ fn get_price_from_feed(
 pub fn get_latest_price(
     sol_usd_price_feed: &AccountLoader<AggregatorAccountData>,
     // nct_usd_price_feed: &AccountLoader<AggregatorAccountData>,
-    nct_usd_price: &f64,
+    nct_usd_price: f64,
     max_staleness: u64,
 ) -> Result<f64> {
     let sol_usd_price = get_price_from_feed(sol_usd_price_feed, max_staleness)?;

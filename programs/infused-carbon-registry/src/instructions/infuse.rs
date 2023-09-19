@@ -37,7 +37,7 @@ pub fn infuse_handler(ctx: Context<Infuse>, amount: u64, nct_usd_price: f64) -> 
     let price = get_latest_price(
         &ctx.accounts.sol_usd_price_feed,
         // &ctx.accounts.nct_usd_price_feed,
-        &nct_usd_price,
+        nct_usd_price,
         global_registry.feed_staleness_threshold,
     )?;
     // Price is token price in SOL
