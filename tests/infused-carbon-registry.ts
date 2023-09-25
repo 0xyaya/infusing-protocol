@@ -61,6 +61,7 @@ describe('infused-carbon-registry', async () => {
   const holdingAccount = new anchor.web3.Keypair();
   const feesAccount = new anchor.web3.Keypair();
   const feedStalenessThreshold = new BN(10000);
+  const nftMint = Keypair.generate();
 
   let switchboard: SwitchboardProgram;
   let aggregatorAccount: AggregatorAccount;
@@ -101,20 +102,17 @@ describe('infused-carbon-registry', async () => {
   });
 
   it('Infused an account!', async () => {
-    const nftMint = Keypair.generate();
     const result: Big | null =
       await aggregatorAccount.fetchLatestValue();
     if (result === null) {
       throw new Error('Aggregator holds no value');
     }
-    console.log('sol/usd data feed price: ', result.toString());
 
     const resultNctUsd: Big | null =
       await aggregatorAccountNctUsd.fetchLatestValue();
     if (result === null) {
       throw new Error('Aggregator holds no value');
     }
-    console.log('nct/usd data feed price: ', resultNctUsd.toString());
 
     // await requestAirdrop(provider.connection, signer.publicKey, 100);
 
@@ -130,7 +128,7 @@ describe('infused-carbon-registry', async () => {
     try {
       // Add your test here.
       const tx = await program.methods
-        .infuse(new BN(16), resultNctUsd)
+        .infuse(new BN(32), resultNctUsd)
         .accounts({
           globalRegistry: state,
           nftMint: nftMint.publicKey,
@@ -146,7 +144,6 @@ describe('infused-carbon-registry', async () => {
       console.log(e);
     }
 
-    // check holding fees and signer account balance
     const holdingAccountBalance =
       await provider.connection.getBalance(holdingAccount.publicKey);
     const newFeesAccountBalance =
@@ -154,11 +151,17 @@ describe('infused-carbon-registry', async () => {
     const signerAccountBalance = await provider.connection.getBalance(
       provider.wallet.publicKey
     );
-    console.log(
-      'Signer balance before: ',
-      signerAccountBalanceBefore
+
+    const [infusedAccountAddress] = PublicKey.findProgramAddressSync(
+      [
+        utils.bytes.utf8.encode('infused-account'),
+        nftMint.publicKey.toBytes(),
+      ],
+      program.programId
     );
-    console.log('Signer balance after: ', signerAccountBalance);
+    const infusedAccountState =
+      await program.account.infusedAccount.fetch(infusedAccount);
+
     expect(
       holdingAccountBalance,
       'The holding account should have more than 1 lamports'
@@ -171,5 +174,28 @@ describe('infused-carbon-registry', async () => {
       signerAccountBalance,
       'The signer account should have less lamports'
     ).to.be.lessThan(signerAccountBalanceBefore);
+  });
+
+  it('increase the carbon score', async () => {
+    const [infusedAccountAddress] = PublicKey.findProgramAddressSync(
+      [
+        utils.bytes.utf8.encode('infused-account'),
+        nftMint.publicKey.toBytes(),
+      ],
+      program.programId
+    );
+    const infusedAccount = await program.account.infusedAccount.fetch(
+      infusedAccountAddress
+    );
+
+    console.log(
+      'infusedAccount carbonScore: ',
+      infusedAccount.carbonScore.toNumber()
+    );
+
+    expect(
+      infusedAccount.carbonScore.toNumber(),
+      'The infused carbon score is greater than 0'
+    ).to.be.greaterThan(0);
   });
 });

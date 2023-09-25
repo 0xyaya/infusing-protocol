@@ -76,21 +76,21 @@ pub fn infuse_handler(ctx: Context<Infuse>, amount: u64, nct_usd_price: f64) -> 
     //     nct_usd_price,
     //     global_registry.feed_staleness_threshold,
     // )?;
-    let price = 1.5 as f64;
+    let price = 1.41 as f64;
     // Price is token price in SOL
     // Amount is in lamports (9 dp)
     // We need to convert to the token amount in minor units
     // token amount = lamports / (10^(9-decimals)) * price
     // Note, this works even if decimals > 9
-    let token_decimal_denominator = (10_f64).powi(9_i32 - LAMPORTS_PER_SOL as i32);
-    let token_amount_to_buy_and_burn = (amount as f64 / (token_decimal_denominator * price)) as u64;
-
+    // let token_decimal_denominator = (10_f64).powi(9_i32 - LAMPORTS_PER_SOL as i32);
+    let carbon_tons = (amount_to_burn as f64 / (LAMPORTS_PER_SOL as f64 * price)) as u64;
+    infused_account.carbon_score = infused_account.carbon_score.checked_add(carbon_tons).unwrap();
     msg!(
         "{} CTT sent to infused {}",
-        amount,
+        amount_to_burn,
         infused_account.to_account_info().key().to_string()
     );
-    msg!("{} NCT bought", token_amount_to_buy_and_burn);
+    msg!("{} NCT bought", carbon_tons);
     msg!("{} CTT collected as fees", fees);
     // calcul right amount of NCT with amount CTT
     // send NCT bought value in CTT to the holding account
