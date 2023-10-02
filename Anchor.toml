@@ -2,18 +2,18 @@
 seeds = false
 skip-lint = false
 
+[provider]
+cluster = "devnet"
+wallet = "/Users/yann/.config/solana/id.json"
+
 [programs.localnet]
-infused_carbon_registry = "3g3YSqpjbWGYSSGTEVhP3jLavuLpH3toyE6zgMUrzzoC"
+infused_carbon_registry = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
 
 [programs.devnet]
-infused_carbon_registry = "3g3YSqpjbWGYSSGTEVhP3jLavuLpH3toyE6zgMUrzzoC"
+infused_carbon_registry = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
 
 [registry]
 url = "https://api.apr.dev"
-
-[provider]
-cluster = "localnet"
-wallet = "/Users/yann/.config/solana/id.json"
 
 [test.validator]
 url = "https://api.mainnet-beta.solana.com"

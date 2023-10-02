@@ -6,7 +6,7 @@ pub struct GlobalRegistryParams {
     pub fees_account: Pubkey,
     // pub ctt_mint: Pubkey,
     // pub nct_mint: Pubkey,
-    pub feed_staleness_threshold: u64,
+    // pub feed_staleness_threshold: u64,
 }
 
 #[account]
@@ -15,5 +15,5 @@ pub struct GlobalRegistryState {
     pub fees_account: Pubkey,
     // pub ctt_mint: Pubkey,
     // pub nct_mint: Pubkey,
-    pub feed_staleness_threshold: u64,
+    // pub feed_staleness_threshold: u64,
 }

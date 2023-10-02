@@ -46,10 +46,10 @@ const requestAirdrop = async (connection, wallet, amount) => {
   );
 };
 
-describe('infused-carbon-registry', async () => {
-  console.log('INIT');
-  // Configure the client to use the local cluster.
+describe('infused-carbon-registry', () => {
+  anchor.setProvider(anchor.AnchorProvider.env());
   const provider = AnchorProvider.env();
+  // Configure the client to use the local cluster.
   const program = anchor.workspace
     .InfusedCarbonRegistry as Program<InfusedCarbonRegistry>;
 
@@ -58,8 +58,14 @@ describe('infused-carbon-registry', async () => {
     program.programId
   );
 
-  const holdingAccount = new anchor.web3.Keypair();
-  const feesAccount = new anchor.web3.Keypair();
+  // const holdingAccount = new anchor.web3.Keypair();
+  const holdingAccount = new PublicKey(
+    '6ACx2p98pF7m58GYZViCtv4sxYED9Yj5HDcMZk6BR1FK'
+  );
+  // const feesAccount = new anchor.web3.Keypair();
+  const feesAccount = new PublicKey(
+    '735WcMTFNG3qXQat7VP2uxMpSvts969xg5vnKPiDpsp9'
+  ); //735WcMTFNG3qXQat7VP2uxMpSvts969xg5vnKPiDpsp9
   const feedStalenessThreshold = new BN(10000);
   const nftMint = Keypair.generate();
 
@@ -73,28 +79,46 @@ describe('infused-carbon-registry', async () => {
   const solUsdPriceFeed = new PublicKey(
     'GvDMxPzN1sCj7L26YDK2HnMRXEQmQ2aemov8YBtPS7vR'
   );
-  console.log('MIDLE');
 
-  before(async () => {
-    switchboard = await SwitchboardProgram.fromProvider(provider);
-    aggregatorAccount = new AggregatorAccount(
-      switchboard,
-      solUsdPriceFeed
-    );
-    aggregatorAccountNctUsd = new AggregatorAccount(
-      switchboard,
-      nctUsdPriceFeed
-    );
+  // before(async () => {
+  //   switchboard = await SwitchboardProgram.fromProvider(provider);
+  //   aggregatorAccount = new AggregatorAccount(
+  //     switchboard,
+  //     solUsdPriceFeed
+  //   );
+  //   aggregatorAccountNctUsd = new AggregatorAccount(
+  //     switchboard,
+  //     nctUsdPriceFeed
+  //   );
+  // });
+
+  it('send sol', async () => {
+    console.log('Start test...');
+    const holdingAccountBalance =
+      await provider.connection.getBalance(holdingAccount);
+    console.log('Before: ', holdingAccountBalance);
+    const tx = await program.methods
+      .sendSol(new BN(1 * LAMPORTS_PER_SOL))
+      .accounts({
+        from: provider.publicKey,
+        to: holdingAccount,
+      })
+      .rpc();
+
+    console.log('Your transaction signature', tx);
+    const holdingAccountBalanceAfter =
+      await provider.connection.getBalance(holdingAccount);
+    console.log('balance after: ', holdingAccountBalanceAfter);
   });
 
   it('Is initialized!', async () => {
-    console.log('TEST');
+    console.log('Start test...');
     const tx = await program.methods
-      .initialize(feedStalenessThreshold)
+      .initialize()
       .accounts({
         state,
-        holdingAccount: holdingAccount.publicKey,
-        feesAccount: feesAccount.publicKey,
+        holdingAccount: holdingAccount,
+        feesAccount: feesAccount,
       })
       .rpc();
 
@@ -102,17 +126,17 @@ describe('infused-carbon-registry', async () => {
   });
 
   it('Infused an account!', async () => {
-    const result: Big | null =
-      await aggregatorAccount.fetchLatestValue();
-    if (result === null) {
-      throw new Error('Aggregator holds no value');
-    }
+    // const result: Big | null =
+    //   await aggregatorAccount.fetchLatestValue();
+    // if (result === null) {
+    //   throw new Error('Aggregator holds no value');
+    // }
 
-    const resultNctUsd: Big | null =
-      await aggregatorAccountNctUsd.fetchLatestValue();
-    if (result === null) {
-      throw new Error('Aggregator holds no value');
-    }
+    // const resultNctUsd: Big | null =
+    //   await aggregatorAccountNctUsd.fetchLatestValue();
+    // if (result === null) {
+    //   throw new Error('Aggregator holds no value');
+    // }
 
     // await requestAirdrop(provider.connection, signer.publicKey, 100);
 
@@ -128,15 +152,13 @@ describe('infused-carbon-registry', async () => {
     try {
       // Add your test here.
       const tx = await program.methods
-        .infuse(new BN(32), resultNctUsd)
+        .infuse(new BN(1))
         .accounts({
           globalRegistry: state,
           nftMint: nftMint.publicKey,
           infusedAccount,
-          holdingAccount: holdingAccount.publicKey,
-          feesAccount: feesAccount.publicKey,
-          solUsdPriceFeed: aggregatorAccount.publicKey,
-          nctUsdPriceFeed: aggregatorAccountNctUsd.publicKey,
+          holdingAccount: holdingAccount,
+          feesAccount: feesAccount,
         })
         .rpc();
       console.log('Your transaction signature', tx);
@@ -145,9 +167,9 @@ describe('infused-carbon-registry', async () => {
     }
 
     const holdingAccountBalance =
-      await provider.connection.getBalance(holdingAccount.publicKey);
+      await provider.connection.getBalance(holdingAccount);
     const newFeesAccountBalance =
-      await provider.connection.getBalance(feesAccount.publicKey);
+      await provider.connection.getBalance(feesAccount);
     const signerAccountBalance = await provider.connection.getBalance(
       provider.wallet.publicKey
     );
