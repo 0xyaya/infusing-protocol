@@ -3,14 +3,14 @@ seeds = false
 skip-lint = false
 
 [provider]
-cluster = "devnet"
-wallet = "/Users/yann/.config/solana/id.json"
+cluster = "localnet"
+wallet = "/home/yann/.config/solana/id.json"
 
 [programs.localnet]
-infused_carbon_registry = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
+infusing_protocol = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
 
 [programs.devnet]
-infused_carbon_registry = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
+infusing_protocol = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
 
 [registry]
 url = "https://api.apr.dev"

@@ -1078,7 +1078,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "infused-carbon-registry"
+name = "infusing_protocol"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",

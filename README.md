@@ -1,1 +1,1 @@
-# infused-carbon-registry
+# infuseing-protocol
