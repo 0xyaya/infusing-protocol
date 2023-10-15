@@ -16,6 +16,10 @@ pub mod infusing_protocol {
         initialize_handler(ctx)
     }
 
+    pub fn register_strategy(ctx: Context<RegisterStrategy>, weight: u8) -> Result<()> {
+        register_strategy_handler(ctx, weight)
+    }
+
     pub fn infuse(ctx: Context<Infuse>, amount: u64) -> Result<()> {
         infuse_handler(ctx, amount)
     }

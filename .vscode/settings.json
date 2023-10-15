@@ -1,7 +1,4 @@
 {
-    "rust-analyzer.linkedProjects": [
-        "./programs/infused-carbon-registry/Cargo.toml",
-        "./programs/infused-carbon-registry/Cargo.toml"
-    ],
+    "rust-analyzer.linkedProjects": ["./programs/infusing-protocol/Cargo.toml"],
     "rust-analyzer.showUnlinkedFileNotification": false
 }

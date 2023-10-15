@@ -1,7 +1,7 @@
 mod infuse;
 mod initialize;
-mod send_sol;
+mod register_strategy;
 
 pub use infuse::*;
 pub use initialize::*;
-pub use send_sol::*;
+pub use register_strategy::*;

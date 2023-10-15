@@ -76,17 +76,31 @@ describe('infusing protocol', () => {
     // });
 
     it('Is initialized!', async () => {
-        console.log('Start test...');
         const tx = await program.methods
             .initialize()
             .accounts({
                 state,
-                holdingAccount: holdingAccount,
                 feesAccount: feesAccount
             })
             .rpc();
 
         console.log('Your transaction signature', tx);
+    });
+
+    it('Register a first strategy!', async () => {
+        try {
+            // Add your test here.
+            const tx = await program.methods
+                .registerStrategy(100)
+                .accounts({
+                    globalRegistry: state,
+                    holdingAccount: holdingAccount
+                })
+                .rpc();
+            console.log('Your transaction signature', tx);
+        } catch (e) {
+            console.log(e);
+        }
     });
 
     it('Infused an account!', async () => {
