@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::TokenAccount;
 
 use crate::state::GlobalRegistry;
 
@@ -17,8 +16,6 @@ pub struct Initialize<'info> {
 pub fn initialize_handler(ctx: Context<Initialize>) -> Result<()> {
     let state = &mut ctx.accounts.state;
     state.fees_account = ctx.accounts.fees_account.key();
-    // state.ctt_mint = params.ctt_mint;
-    // state.nct_mint = params.nct_mint;
-    // state.feed_staleness_threshold = staleness_threshold;
+
     Ok(())
 }

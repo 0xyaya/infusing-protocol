@@ -35,11 +35,13 @@ pub fn infuse_handler(ctx: Context<Infuse>, amount: u64) -> Result<()> {
     let fees_transfer_instruction =
         system_instruction::transfer(signer.key, fees_account.key, fees as u64);
 
+    // A first routing controller
     for i in 0..global_registry.strategies.len() {
         let strategy = &global_registry.strategies[i];
         let amount = amount_to_burn as f64 * (strategy.weight as f64 / 100.00);
         let holding_transfer_instruction =
             system_instruction::transfer(signer.key, holding_account.key, amount as u64);
+
         invoke_signed(
             &holding_transfer_instruction,
             &[
@@ -61,32 +63,15 @@ pub fn infuse_handler(ctx: Context<Infuse>, amount: u64) -> Result<()> {
         &[],
     )?;
 
-    // send fees to the fees_account
-    // get oracle price feed
-    // let price = get_latest_price(
-    //     &ctx.accounts.sol_usd_price_feed,
-    //     &ctx.accounts.nct_usd_price_feed,
-    //     nct_usd_price,
-    //     global_registry.feed_staleness_threshold,
-    // )?;
+    // TODO: use switchboard price feed
     let price = 1.40 as f64 / 21 as f64;
-    // Price is token price in SOL
-    // Amount is in lamports (9 dp)
-    // We need to convert to the token amount in minor units
-    // token amount = lamports / (10^(9-decimals)) * price
-    // Note, this works even if decimals > 9
-    // let token_decimal_denominator = (10_f64).powi(9_i32 - LAMPORTS_PER_SOL as i32);
+
     let carbon_tons = (amount_to_burn as f64 / (LAMPORTS_PER_SOL as f64 * price)) as u64;
     infused_account.carbon_score = infused_account
         .carbon_score
         .checked_add(carbon_tons)
         .unwrap();
     infused_account.nft_mint = ctx.accounts.nft_mint.key();
-    msg!("NftMint: {}", infused_account.nft_mint.key().to_string());
-    // calcul right amount of NCT with amount CTT
-    // send NCT bought value in CTT to the holding account
-    // increase carbon score with NCT burnt
-    // infused_account.carbon_score = infused_account.carbon_score + amount;
-    // infused_account.last_infused_time = clock.unix_timestamp as u64;
+
     Ok(())
 }
