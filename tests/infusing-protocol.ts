@@ -37,7 +37,7 @@ describe('infusing protocol', () => {
         .InfusingProtocol as Program<InfusingProtocol>;
 
     const [state] = PublicKey.findProgramAddressSync(
-        [utils.bytes.utf8.encode('global-registry')],
+        [utils.bytes.utf8.encode('controller')],
         program.programId
     );
 
@@ -104,18 +104,6 @@ describe('infusing protocol', () => {
     });
 
     it('Infused an account!', async () => {
-        // const result: Big | null =
-        //   await aggregatorAccount.fetchLatestValue();
-        // if (result === null) {
-        //   throw new Error('Aggregator holds no value');
-        // }
-
-        // const resultNctUsd: Big | null =
-        //   await aggregatorAccountNctUsd.fetchLatestValue();
-        // if (result === null) {
-        //   throw new Error('Aggregator holds no value');
-        // }
-
         // await requestAirdrop(provider.connection, signer.publicKey, 100);
 
         const [infusedAccount] = PublicKey.findProgramAddressSync(

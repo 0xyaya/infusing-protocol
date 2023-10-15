@@ -1,11 +1,12 @@
 use anchor_lang::prelude::*;
 
-use crate::state::GlobalRegistry;
+use crate::state::Controller;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init,seeds = [ b"global-registry"], payer = signer, space = 136, bump)]
-    pub state: Account<'info, GlobalRegistry>,
+    // TODO: fix this stupid fixed space
+    #[account(init,seeds = [ b"controller"], payer = signer, space = 136, bump)]
+    pub state: Account<'info, Controller>,
     /// CHECK: This account is not read or written
     pub fees_account: AccountInfo<'info>,
     #[account(mut)]

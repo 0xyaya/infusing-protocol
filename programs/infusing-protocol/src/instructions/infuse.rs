@@ -1,4 +1,4 @@
-use crate::state::{GlobalRegistry, InfusedAccount};
+use crate::state::{Controller, InfusedAccount};
 use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::solana_program::program::invoke_signed;
 use anchor_lang::solana_program::{self, system_instruction};
@@ -6,8 +6,8 @@ use anchor_lang::{prelude::*, system_program};
 
 #[derive(Accounts)]
 pub struct Infuse<'info> {
-    #[account( seeds = [ b"global-registry"], bump)]
-    pub global_registry: Account<'info, GlobalRegistry>,
+    #[account( seeds = [ b"controller"], bump)]
+    pub global_registry: Account<'info, Controller>,
     /// CHECK: This account is not read or written
     pub nft_mint: UncheckedAccount<'info>,
     #[account(init_if_needed, seeds = [ b"infused-account", nft_mint.key().as_ref()], payer = signer, space = 168, bump)]
@@ -24,7 +24,7 @@ pub struct Infuse<'info> {
 }
 
 pub fn infuse_handler(ctx: Context<Infuse>, amount: u64) -> Result<()> {
-    let global_registry = &mut ctx.accounts.global_registry;
+    let controller = &mut ctx.accounts.global_registry;
     let infused_account = &mut ctx.accounts.infused_account;
     let fees_account = &mut ctx.accounts.fees_account;
     let holding_account = &mut ctx.accounts.holding_account;
@@ -36,8 +36,8 @@ pub fn infuse_handler(ctx: Context<Infuse>, amount: u64) -> Result<()> {
         system_instruction::transfer(signer.key, fees_account.key, fees as u64);
 
     // A first routing controller
-    for i in 0..global_registry.strategies.len() {
-        let strategy = &global_registry.strategies[i];
+    for i in 0..controller.strategies.len() {
+        let strategy = &controller.strategies[i];
         let amount = amount_to_burn as f64 * (strategy.weight as f64 / 100.00);
         let holding_transfer_instruction =
             system_instruction::transfer(signer.key, holding_account.key, amount as u64);

@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[account]
-pub struct GlobalRegistry {
+pub struct Controller {
     pub strategies: Vec<Strategy>,
     pub fees_account: Pubkey,
 }

@@ -1,12 +1,12 @@
-use crate::state::{GlobalRegistry, Strategy};
+use crate::state::{Controller, Strategy};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct RegisterStrategy<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
-    #[account(mut, seeds = [ b"global-registry"], bump)]
-    pub global_registry: Account<'info, GlobalRegistry>,
+    #[account(mut, seeds = [ b"controller"], bump)]
+    pub global_registry: Account<'info, Controller>,
     /// CHECK: This account is not read or written
     pub holding_account: AccountInfo<'info>,
     pub system_program: Program<'info, System>,
