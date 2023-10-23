@@ -2,11 +2,13 @@ import * as anchor from '@coral-xyz/anchor';
 import {Program, utils, BN, AnchorProvider} from '@coral-xyz/anchor';
 import {Keypair, PublicKey} from '@solana/web3.js';
 import {InfusingProtocol} from '../target/types/infusing_protocol';
-import {
-    AggregatorAccount,
-    SwitchboardProgram
-} from '@switchboard-xyz/solana.js';
+// import {
+//     AggregatorAccount,
+//     SwitchboardProgram
+// } from '@switchboard-xyz/solana.js';
 import {expect} from 'chai';
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const requestAirdrop = async (connection, wallet, amount) => {
     console.log(`Requesting airdrop for ${wallet}`);
@@ -31,7 +33,11 @@ const requestAirdrop = async (connection, wallet, amount) => {
 
 describe('infusing protocol', () => {
     anchor.setProvider(anchor.AnchorProvider.env());
-    const provider = AnchorProvider.env();
+    const provider = AnchorProvider.local('http://localhost:8899', {
+        preflightCommitment: 'confirmed'
+    });
+    // const provider = AnchorProvider.env();
+
     // Configure the client to use the local cluster.
     const program = anchor.workspace
         .InfusingProtocol as Program<InfusingProtocol>;
@@ -52,9 +58,9 @@ describe('infusing protocol', () => {
     const feedStalenessThreshold = new BN(10000);
     const nftMint = Keypair.generate();
 
-    let switchboard: SwitchboardProgram;
-    let aggregatorAccount: AggregatorAccount;
-    let aggregatorAccountNctUsd: AggregatorAccount;
+    // let switchboard: SwitchboardProgram;
+    // let aggregatorAccount: AggregatorAccount;
+    // let aggregatorAccountNctUsd: AggregatorAccount;
 
     const nctUsdPriceFeed = new PublicKey(
         '4YL36VBtFkD2zfNGWdGFSc5suvskjrHnx3Asuksyek1J'
@@ -104,7 +110,7 @@ describe('infusing protocol', () => {
     });
 
     it('Infused an account!', async () => {
-        // await requestAirdrop(provider.connection, signer.publicKey, 100);
+        // await requestAirdrop(provider.connection, holdingAccount, 100);
 
         const [infusedAccount] = PublicKey.findProgramAddressSync(
             [
@@ -116,19 +122,44 @@ describe('infusing protocol', () => {
         const signerAccountBalanceBefore = await provider.connection.getBalance(
             provider.wallet.publicKey
         );
+
         try {
-            // Add your test here.
             const tx = await program.methods
                 .infuse(new BN(1))
                 .accounts({
                     globalRegistry: state,
                     nftMint: nftMint.publicKey,
                     infusedAccount,
-                    holdingAccount: holdingAccount,
                     feesAccount: feesAccount
                 })
-                .rpc();
+                .remainingAccounts([
+                    {
+                        pubkey: holdingAccount,
+                        isWritable: true,
+                        isSigner: false
+                    }
+                ])
+                .rpc({commitment: 'confirmed'});
+
+            const txTwo = await program.methods
+                .infuse(new BN(2))
+                .accounts({
+                    globalRegistry: state,
+                    nftMint: nftMint.publicKey,
+                    infusedAccount,
+                    feesAccount: feesAccount
+                })
+                .remainingAccounts([
+                    {
+                        pubkey: holdingAccount,
+                        isWritable: true,
+                        isSigner: false
+                    }
+                ])
+                .rpc({commitment: 'confirmed'});
+
             console.log('Your transaction signature', tx);
+            console.log('Your transaction signature 2', txTwo);
         } catch (e) {
             console.log(e);
         }
@@ -189,5 +220,69 @@ describe('infusing protocol', () => {
             infusedAccount.carbonScore.toNumber(),
             'The infused carbon score is greater than 0'
         ).to.be.greaterThan(0);
+    });
+
+    it('emit an event when infused', async () => {
+        const coder = new anchor.BorshCoder(program.idl);
+        const eventParser = new anchor.EventParser(program.programId, coder);
+        let transactionList = await provider.connection.getSignaturesForAddress(
+            program.programId,
+            {limit: 100}
+        );
+
+        const res = await Promise.all(
+            transactionList.map(async (transaction, i) => {
+                const tx = await provider.connection.getParsedTransaction(
+                    transaction.signature,
+                    {
+                        commitment: 'confirmed'
+                    }
+                );
+
+                const eventParser = new anchor.EventParser(
+                    program.programId,
+                    new anchor.BorshCoder(program.idl)
+                );
+                const events = eventParser
+                    .parseLogs(tx.meta.logMessages)
+                    .next();
+                // const it = events[Symbol.iterator]();
+
+                // while (!events.done) {
+                //     let next = it.next();
+                //     if (next.value && next.value.name === 'AccountInfused') {
+                //         console.log(
+                //             'InfusedAmount: ',
+                //             Number(next.value.data.amount)
+                //         );
+                //     }
+                // }
+                if (events.value && events.value.name === 'AccountInfused') {
+                    // console.log(
+                    //     'InfusedAmount: ',
+                    //     Number(events.value.data.amount)
+                    // );
+                    // console.log(
+                    //     'Infused Time: ',
+                    //     new Date(Number(events.value.data.time) * 1000)
+                    // );
+
+                    return {
+                        txSignature: transaction.signature,
+                        amount: Number(events.value.data.amount),
+                        date: new Date(Number(events.value.data.time) * 1000)
+                    };
+                } else {
+                    return null;
+                }
+            })
+        );
+
+        // q: why in res i have an array of array ?
+
+        console.log(
+            'res: ',
+            res.filter((el) => el !== null)
+        );
     });
 });

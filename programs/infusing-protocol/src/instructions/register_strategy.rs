@@ -18,6 +18,7 @@ pub fn register_strategy_handler(ctx: Context<RegisterStrategy>, weight: u8) -> 
     let strategy: Strategy = Strategy {
         holding_account: new_account.key(),
         weight: weight,
+        active: true,
     };
     global_restitry.strategies.push(strategy);
 

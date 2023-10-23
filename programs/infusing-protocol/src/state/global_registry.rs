@@ -10,4 +10,5 @@ pub struct Controller {
 pub struct Strategy {
     pub holding_account: Pubkey,
     pub weight: u8,
+    pub active: bool,
 }

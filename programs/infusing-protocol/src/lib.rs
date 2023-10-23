@@ -6,6 +6,8 @@ mod utils;
 use instructions::*;
 use state::*;
 
+mod errors;
+
 declare_id!("GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7");
 
 #[program]
@@ -20,7 +22,10 @@ pub mod infusing_protocol {
         register_strategy_handler(ctx, weight)
     }
 
-    pub fn infuse(ctx: Context<Infuse>, amount: u64) -> Result<()> {
+    pub fn infuse<'info>(
+        ctx: Context<'_, '_, '_, 'info, Infuse<'info>>,
+        amount: u64,
+    ) -> Result<()> {
         infuse_handler(ctx, amount)
     }
 }
