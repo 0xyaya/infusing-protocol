@@ -246,43 +246,24 @@ describe('infusing protocol', () => {
                 const events = eventParser
                     .parseLogs(tx.meta.logMessages)
                     .next();
-                // const it = events[Symbol.iterator]();
 
-                // while (!events.done) {
-                //     let next = it.next();
-                //     if (next.value && next.value.name === 'AccountInfused') {
-                //         console.log(
-                //             'InfusedAmount: ',
-                //             Number(next.value.data.amount)
-                //         );
-                //     }
-                // }
                 if (events.value && events.value.name === 'AccountInfused') {
-                    // console.log(
-                    //     'InfusedAmount: ',
-                    //     Number(events.value.data.amount)
-                    // );
-                    // console.log(
-                    //     'Infused Time: ',
-                    //     new Date(Number(events.value.data.time) * 1000)
-                    // );
-
                     return {
                         txSignature: transaction.signature,
                         amount: Number(events.value.data.amount),
                         date: new Date(Number(events.value.data.time) * 1000)
                     };
-                } else {
-                    return null;
-                }
+                } else return null;
             })
         );
 
-        // q: why in res i have an array of array ?
+        const total = res
+            .filter((el) => el !== null)
+            .reduce((acc, val) => acc + val.amount, 0);
 
-        console.log(
-            'res: ',
-            res.filter((el) => el !== null)
-        );
+        expect(
+            total,
+            'The total infused amount is greater than 0'
+        ).to.be.greaterThan(0);
     });
 });
