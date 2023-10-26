@@ -8,7 +8,7 @@ pub struct RegisterStrategy<'info> {
     #[account(mut, seeds = [ b"controller-details"], bump)]
     pub controller_details: Account<'info, ControllerDetails>,
     /// CHECK: This account is not read or written
-    pub holding_account: AccountInfo<'info>,
+    pub holding_account: AccountInfo<'info>, // Maybe not needed as input account ?
     pub system_program: Program<'info, System>,
 }
 

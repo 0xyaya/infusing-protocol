@@ -18,7 +18,7 @@ pub struct Infuse<'info> {
     pub controller_details: Account<'info, ControllerDetails>,
     /// CHECK: This account is not read or written
     pub nft_mint: UncheckedAccount<'info>,
-    #[account(init_if_needed, seeds = [ b"infused-account", nft_mint.key().as_ref()], payer = signer, space = 168, bump)]
+    #[account(init_if_needed, seeds = [ b"infused-account", nft_mint.key().as_ref()], payer = signer, space = 8 + InfusedAccount::SIZE, bump)]
     pub infused_account: Account<'info, InfusedAccount>,
 
     /// CHECK: This account is not read or written
