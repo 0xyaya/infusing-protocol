@@ -1,9 +1,9 @@
 use crate::errors::ErrorCode;
 use crate::state::{ControllerDetails, InfusedAccount};
+use anchor_lang::prelude::*;
 use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::solana_program::program::invoke_signed;
-use anchor_lang::solana_program::{self, system_instruction};
-use anchor_lang::{prelude::*, system_program};
+use anchor_lang::solana_program::system_instruction;
 
 #[event]
 pub struct AccountInfused {
@@ -15,7 +15,7 @@ pub struct AccountInfused {
 #[derive(Accounts)]
 pub struct Infuse<'info> {
     #[account( seeds = [ b"controller-details"], bump)]
-    pub global_registry: Account<'info, ControllerDetails>,
+    pub controller_details: Account<'info, ControllerDetails>,
     /// CHECK: This account is not read or written
     pub nft_mint: UncheckedAccount<'info>,
     #[account(init_if_needed, seeds = [ b"infused-account", nft_mint.key().as_ref()], payer = signer, space = 168, bump)]
@@ -33,7 +33,7 @@ pub fn infuse_handler<'info>(
     ctx: Context<'_, '_, '_, 'info, Infuse<'info>>,
     amount: u64,
 ) -> Result<()> {
-    let controller = &mut ctx.accounts.global_registry;
+    let controller_details = &mut ctx.accounts.controller_details;
     let infused_account = &mut ctx.accounts.infused_account;
     let fees_account = &mut ctx.accounts.fees_account;
     let signer = &mut ctx.accounts.signer;
@@ -49,14 +49,13 @@ pub fn infuse_handler<'info>(
     //     .filter(|s| s.active)
     //     .collect::<Vec<_>>();
 
-    if ctx.remaining_accounts.len() != controller.strategies.len() {
+    if ctx.remaining_accounts.len() != controller_details.strategies.len() {
         return Err(ErrorCode::InvalidRemainingAccountsLength.into());
     }
 
-    // An alternative routing controller
     for i in 0..ctx.remaining_accounts.len() {
         let holding_account = &ctx.remaining_accounts[i];
-        let strategy = controller
+        let strategy = controller_details
             .strategies
             .iter()
             .find(|s| s.holding_account == *holding_account.key)

@@ -127,7 +127,7 @@ describe('infusing protocol', () => {
             const tx = await program.methods
                 .infuse(new BN(1))
                 .accounts({
-                    globalRegistry: state,
+                    controllerDetails: state,
                     nftMint: nftMint.publicKey,
                     infusedAccount,
                     feesAccount: feesAccount
@@ -144,7 +144,7 @@ describe('infusing protocol', () => {
             const txTwo = await program.methods
                 .infuse(new BN(2))
                 .accounts({
-                    globalRegistry: state,
+                    controllerDetails: state,
                     nftMint: nftMint.publicKey,
                     infusedAccount,
                     feesAccount: feesAccount
