@@ -1,9 +1,10 @@
 use crate::errors::ErrorCode;
-use crate::state::{Controller, InfusedAccount};
+use crate::state::{ControllerDetails, InfusedAccount};
 use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::solana_program::program::invoke_signed;
 use anchor_lang::solana_program::{self, system_instruction};
 use anchor_lang::{prelude::*, system_program};
+
 #[event]
 pub struct AccountInfused {
     pub amount: u64,
@@ -13,8 +14,8 @@ pub struct AccountInfused {
 
 #[derive(Accounts)]
 pub struct Infuse<'info> {
-    #[account( seeds = [ b"controller"], bump)]
-    pub global_registry: Account<'info, Controller>,
+    #[account( seeds = [ b"controller-details"], bump)]
+    pub global_registry: Account<'info, ControllerDetails>,
     /// CHECK: This account is not read or written
     pub nft_mint: UncheckedAccount<'info>,
     #[account(init_if_needed, seeds = [ b"infused-account", nft_mint.key().as_ref()], payer = signer, space = 168, bump)]

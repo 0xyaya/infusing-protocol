@@ -43,7 +43,7 @@ describe('infusing protocol', () => {
         .InfusingProtocol as Program<InfusingProtocol>;
 
     const [state] = PublicKey.findProgramAddressSync(
-        [utils.bytes.utf8.encode('controller')],
+        [utils.bytes.utf8.encode('controller-details')],
         program.programId
     );
 
@@ -99,7 +99,7 @@ describe('infusing protocol', () => {
             const tx = await program.methods
                 .registerStrategy(100)
                 .accounts({
-                    globalRegistry: state,
+                    controllerDetails: state,
                     holdingAccount: holdingAccount
                 })
                 .rpc();

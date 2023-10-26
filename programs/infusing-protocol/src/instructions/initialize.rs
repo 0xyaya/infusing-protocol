@@ -1,12 +1,11 @@
 use anchor_lang::prelude::*;
 
-use crate::state::Controller;
+use crate::state::ControllerDetails;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    // TODO: fix this stupid fixed space
-    #[account(init,seeds = [ b"controller"], payer = signer, space = 136, bump)]
-    pub state: Account<'info, Controller>,
+    #[account(init,seeds = [ b"controller-details"], payer = signer, space = ControllerDetails::MAX_SIZE, bump)]
+    pub state: Account<'info, ControllerDetails>,
     /// CHECK: This account is not read or written
     pub fees_account: AccountInfo<'info>,
     #[account(mut)]
