@@ -110,8 +110,11 @@ describe('infusing protocol', () => {
     });
 
     it('Infused an account!', async () => {
-        // await requestAirdrop(provider.connection, holdingAccount, 100);
-
+        // await requestAirdrop(
+        //     provider.connection,
+        //     provider.wallet.publicKey,
+        //     100
+        // );
         const [infusedAccount] = PublicKey.findProgramAddressSync(
             [
                 utils.bytes.utf8.encode('infused-account'),
@@ -174,16 +177,16 @@ describe('infusing protocol', () => {
             provider.wallet.publicKey
         );
 
-        const [infusedAccountAddress] = PublicKey.findProgramAddressSync(
-            [
-                utils.bytes.utf8.encode('infused-account'),
-                nftMint.publicKey.toBytes()
-            ],
-            program.programId
-        );
-        const infusedAccountState = await program.account.infusedAccount.fetch(
-            infusedAccount
-        );
+        // const [infusedAccountAddress] = PublicKey.findProgramAddressSync(
+        //     [
+        //         utils.bytes.utf8.encode('infused-account'),
+        //         nftMint.publicKey.toBytes()
+        //     ],
+        //     program.programId
+        // );
+        // const infusedAccountState = await program.account.infusedAccount.fetch(
+        //     infusedAccount
+        // );
 
         expect(
             holdingAccountBalance,

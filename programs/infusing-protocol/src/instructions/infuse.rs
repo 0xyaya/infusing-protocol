@@ -116,11 +116,10 @@ pub fn infuse_handler<'info>(
     let lamports = amount.checked_mul(LAMPORTS_PER_SOL).unwrap();
     let fees = lamports as f64 * 0.04;
     let amount_to_burn = lamports.checked_sub(fees as u64).unwrap();
-
     ctx.accounts.transfer_fees(fees)?;
 
     ctx.accounts
-        .transfer_strategies(ctx.remaining_accounts, amount)?;
+        .transfer_strategies(ctx.remaining_accounts, amount_to_burn)?;
 
     let event = ctx.accounts.update_account(amount_to_burn)?;
     emit!(event);
