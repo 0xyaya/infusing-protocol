@@ -1,16 +1,9 @@
 use crate::errors::ErrorCode;
-use crate::state::{ControllerDetails, InfusedAccount};
+use crate::state::{AccountInfused, ControllerDetails, InfusedAccount};
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::solana_program::program::invoke_signed;
 use anchor_lang::solana_program::system_instruction;
-
-#[event]
-pub struct AccountInfused {
-    pub amount: u64,
-    pub nft_mint: Pubkey,
-    pub time: u64,
-}
 
 #[derive(Accounts)]
 pub struct Infuse<'info> {
@@ -88,24 +81,13 @@ impl<'info> Infuse<'info> {
         Ok(())
     }
 
-    pub fn update_account(&mut self, amount: u64) -> Result<AccountInfused> {
-        let time = Clock::get().unwrap().unix_timestamp as u64;
+    pub fn update_account(&mut self, amount: u64) -> Result<()> {
         let price = 1.40 as f64 / 29 as f64;
         let carbon_tons = (amount as f64 / (LAMPORTS_PER_SOL as f64 * price)) as u64;
 
-        self.infused_account.carbon_score = self
-            .infused_account
-            .carbon_score
-            .checked_add(carbon_tons)
-            .unwrap();
-        self.infused_account.nft_mint = self.nft_mint.key();
-        self.infused_account.last_infused_time = time;
+        self.infused_account.update(carbon_tons);
 
-        Ok(AccountInfused {
-            amount: carbon_tons,
-            nft_mint: *self.nft_mint.key,
-            time: time,
-        })
+        Ok(())
     }
 }
 
@@ -117,12 +99,9 @@ pub fn infuse_handler<'info>(
     let fees = lamports as f64 * 0.04;
     let amount_to_burn = lamports.checked_sub(fees as u64).unwrap();
     ctx.accounts.transfer_fees(fees)?;
-
     ctx.accounts
         .transfer_strategies(ctx.remaining_accounts, amount_to_burn)?;
-
-    let event = ctx.accounts.update_account(amount_to_burn)?;
-    emit!(event);
+    ctx.accounts.update_account(amount_to_burn)?;
 
     Ok(())
 }
