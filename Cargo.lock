@@ -1078,7 +1078,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "infusing_protocol"
+name = "infuzed"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",

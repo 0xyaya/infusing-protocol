@@ -1,7 +1,7 @@
 import * as anchor from '@coral-xyz/anchor';
 import {Program, utils, BN, AnchorProvider} from '@coral-xyz/anchor';
 import {Keypair, PublicKey} from '@solana/web3.js';
-import {InfusingProtocol} from '../target/types/infusing_protocol';
+import {Infuzed} from '../target/types/infuzed';
 // import {
 //     AggregatorAccount,
 //     SwitchboardProgram
@@ -31,7 +31,7 @@ const requestAirdrop = async (connection, wallet, amount) => {
     );
 };
 
-describe('infusing protocol', () => {
+describe('infuzed', () => {
     anchor.setProvider(anchor.AnchorProvider.env());
     const provider = AnchorProvider.local('http://localhost:8899', {
         preflightCommitment: 'confirmed'
@@ -39,8 +39,7 @@ describe('infusing protocol', () => {
     // const provider = AnchorProvider.env();
 
     // Configure the client to use the local cluster.
-    const program = anchor.workspace
-        .InfusingProtocol as Program<InfusingProtocol>;
+    const program = anchor.workspace.Infuzed as Program<Infuzed>;
 
     const [state] = PublicKey.findProgramAddressSync(
         [utils.bytes.utf8.encode('controller-details')],

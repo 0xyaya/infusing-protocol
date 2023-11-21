@@ -7,10 +7,10 @@ cluster = "localnet"
 wallet = "/home/yann/.config/solana/id.json"
 
 [programs.localnet]
-infusing_protocol = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
+infuzed = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
 
 [programs.devnet]
-infusing_protocol = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
+infuzed = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"
 
 [registry]
 url = "https://api.apr.dev"

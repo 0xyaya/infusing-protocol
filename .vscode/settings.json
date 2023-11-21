@@ -1,4 +1,4 @@
 {
-    "rust-analyzer.linkedProjects": ["./programs/infusing-protocol/Cargo.toml"],
+    "rust-analyzer.linkedProjects": ["./programs/infuzed/Cargo.toml"],
     "rust-analyzer.showUnlinkedFileNotification": false
 }

@@ -11,7 +11,7 @@ mod errors;
 declare_id!("GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7");
 
 #[program]
-pub mod infusing_protocol {
+pub mod infuzed {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
