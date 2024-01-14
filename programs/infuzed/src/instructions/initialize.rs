@@ -1,11 +1,11 @@
 use anchor_lang::prelude::*;
 
-use crate::state::ControllerDetails;
+use crate::state::Controller;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init,seeds = [ b"controller-details"], payer = signer, space = 8 + ControllerDetails::MAX_SIZE, bump)]
-    pub state: Account<'info, ControllerDetails>,
+    #[account(init,seeds = [ b"controller"], payer = signer, space = 8 + Controller::MAX_SIZE, bump)]
+    pub state: Account<'info, Controller>,
     /// CHECK: This account is not read or written
     pub fees_account: AccountInfo<'info>, // Maybe not needed as input account ?
     #[account(mut)]

@@ -1,5 +1,5 @@
 use crate::errors::ErrorCode;
-use crate::state::{AccountInfused, ControllerDetails, InfusedAccount};
+use crate::state::{AccountInfused, Controller, InfusedAccount};
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::solana_program::program::invoke_signed;
@@ -7,8 +7,8 @@ use anchor_lang::solana_program::system_instruction;
 
 #[derive(Accounts)]
 pub struct Infuse<'info> {
-    #[account( seeds = [ b"controller-details"], bump)]
-    pub controller_details: Account<'info, ControllerDetails>,
+    #[account( seeds = [ b"controller"], bump)]
+    pub controller: Account<'info, Controller>,
     /// CHECK: This account is not read or written
     pub nft_mint: UncheckedAccount<'info>,
     #[account(init_if_needed, seeds = [ b"infused-account", nft_mint.key().as_ref()], payer = signer, space = 8 + InfusedAccount::SIZE, bump)]
@@ -43,14 +43,14 @@ impl<'info> Infuse<'info> {
         remaining_accounts: &[AccountInfo<'info>],
         amount: u64,
     ) -> Result<()> {
-        if remaining_accounts.len() != self.controller_details.strategies.len() {
+        if remaining_accounts.len() != self.controller.strategies.len() {
             return Err(ErrorCode::InvalidRemainingAccountsLength.into());
         }
 
         for i in 0..remaining_accounts.len() {
             let holding_account = &remaining_accounts[i];
             let strategy = self
-                .controller_details
+                .controller
                 .strategies
                 .iter()
                 .find(|s| s.holding_account == *holding_account.key)

@@ -4,7 +4,7 @@ skip-lint = false
 
 [provider]
 cluster = "localnet"
-wallet = "/home/yann/.config/solana/id.json"
+wallet = "/Users/yann/.config/solana/id.json"
 
 [programs.localnet]
 infuzed = "GfnsaGsBQ2bWBdoQ2WsgcwJQAKMUBNJdx9aakWtARMs7"

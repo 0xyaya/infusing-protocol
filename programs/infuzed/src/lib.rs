@@ -18,8 +18,8 @@ pub mod infuzed {
         initialize_handler(ctx)
     }
 
-    pub fn register_strategy(ctx: Context<RegisterStrategy>, weight: u8) -> Result<()> {
-        register_strategy_handler(ctx, weight)
+    pub fn add_strategy(ctx: Context<AddStrategy>, weight: u8) -> Result<()> {
+        add_strategy_handler(ctx, weight)
     }
 
     pub fn infuse<'info>(
