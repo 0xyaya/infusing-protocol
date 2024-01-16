@@ -50,9 +50,15 @@ describe('infuzed', () => {
     [utils.bytes.utf8.encode('controller')],
     program.programId
   );
+  const strategy_id = Buffer.alloc(8);
+  strategy_id.writeBigUint64LE(BigInt(1));
+  const [holdingAccount] = PublicKey.findProgramAddressSync(
+    [utils.bytes.utf8.encode('strategy')],
+    program.programId
+  );
 
   // const holdingAccount = new anchor.web3.Keypair();
-  const holdingAccount = new PublicKey(
+  const holdingAccount_ = new PublicKey(
     '6ACx2p98pF7m58GYZViCtv4sxYED9Yj5HDcMZk6BR1FK'
   );
   // const feesAccount = new anchor.web3.Keypair();
@@ -101,10 +107,10 @@ describe('infuzed', () => {
     try {
       // Add your test here.
       const tx = await program.methods
-        .addStrategy(100)
+        .addStrategy(100, new anchor.BN(1))
         .accounts({
           controller: state,
-          holdingAccount: holdingAccount,
+          strategy: holdingAccount,
         })
         .rpc();
       console.log('Your transaction signature', tx);

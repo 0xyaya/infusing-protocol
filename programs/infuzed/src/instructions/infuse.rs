@@ -1,9 +1,10 @@
 use crate::errors::ErrorCode;
-use crate::state::{AccountInfused, Controller, InfusedAccount};
+use crate::state::{Controller, InfusedAccount, StrategyAccount};
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::solana_program::program::invoke_signed;
 use anchor_lang::solana_program::system_instruction;
+use anchor_lang::system_program::{Transfer, transfer};
 
 #[derive(Accounts)]
 pub struct Infuse<'info> {
@@ -35,6 +36,26 @@ impl<'info> Infuse<'info> {
             ],
             &[],
         )?;
+        Ok(())
+    }
+
+    pub fn transfer_to_strategies(
+        &self,
+        remaining_accounts: &[AccountInfo<'info>],
+        amount: u64
+    ) -> Result<()> {
+        if remaining_accounts.len() != self.controller.strategies.len() {
+            return Err(ErrorCode::InvalidRemainingAccountsLength.into());
+        }
+
+        let cpi_context = CpiContext::new(
+            self.system_program.to_account_info(), 
+            Transfer {
+                from: self.signer.to_account_info(),
+                to: remaining_accounts[0].to_account_info(),
+            });
+        transfer(cpi_context, amount)?;
+
         Ok(())
     }
 
@@ -100,7 +121,7 @@ pub fn infuse_handler<'info>(
     let amount_to_burn = lamports.checked_sub(fees as u64).unwrap();
     ctx.accounts.transfer_fees(fees)?;
     ctx.accounts
-        .transfer_strategies(ctx.remaining_accounts, amount_to_burn)?;
+        .transfer_to_strategies(ctx.remaining_accounts, amount_to_burn)?;
     ctx.accounts.update_account(amount_to_burn)?;
 
     Ok(())

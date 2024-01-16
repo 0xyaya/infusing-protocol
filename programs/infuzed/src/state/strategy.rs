@@ -7,6 +7,13 @@ pub struct Strategy {
     pub active: bool,
 }
 
+#[account]
+pub struct StrategyAccount {
+    pub holding_account: Pubkey,
+    pub weight: u8,
+    pub active: bool,
+}
+
 impl Strategy {
     pub const SIZE: usize = 32 + 1 + 1;
 }

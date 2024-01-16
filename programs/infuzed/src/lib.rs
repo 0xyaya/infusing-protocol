@@ -4,7 +4,6 @@ mod state;
 mod utils;
 
 use instructions::*;
-use state::*;
 
 mod errors;
 
@@ -18,8 +17,8 @@ pub mod infuzed {
         initialize_handler(ctx)
     }
 
-    pub fn add_strategy(ctx: Context<AddStrategy>, weight: u8) -> Result<()> {
-        add_strategy_handler(ctx, weight)
+    pub fn add_strategy(ctx: Context<AddStrategy>, weight: u8, strategy_id: u64) -> Result<()> {
+        add_strategy_handler(ctx, weight, strategy_id)
     }
 
     pub fn infuse<'info>(
