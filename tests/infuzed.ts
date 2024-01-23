@@ -50,10 +50,12 @@ describe('infuzed', () => {
     [utils.bytes.utf8.encode('controller')],
     program.programId
   );
-  const strategy_id = Buffer.alloc(8);
-  strategy_id.writeBigUint64LE(BigInt(1));
+  const yourIndex = new BN(1);
+  const byteArray = yourIndex.toArray('le', 4);
+  const strategy_id = Buffer.alloc(4);
+  strategy_id.writeUInt32LE(1);
   const [holdingAccount] = PublicKey.findProgramAddressSync(
-    [utils.bytes.utf8.encode('strategy')],
+    [utils.bytes.utf8.encode('strategy'), strategy_id],
     program.programId
   );
 
@@ -78,6 +80,8 @@ describe('infuzed', () => {
   const solUsdPriceFeed = new PublicKey(
     'GvDMxPzN1sCj7L26YDK2HnMRXEQmQ2aemov8YBtPS7vR'
   );
+
+  let offseting_wallet = Keypair.generate();
 
   // before(async () => {
   //   switchboard = await SwitchboardProgram.fromProvider(provider);
@@ -107,12 +111,22 @@ describe('infuzed', () => {
     try {
       // Add your test here.
       const tx = await program.methods
-        .addStrategy(100, new anchor.BN(1))
+        .addStrategy(100)
         .accounts({
           controller: state,
           strategy: holdingAccount,
+          strategyAuthority: provider.publicKey,
+          redeemAddress: offseting_wallet.publicKey,
+          priceFeed: new PublicKey(
+            'HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J'
+          ),
         })
-        .rpc();
+        .rpc({
+          skipPreflight: true,
+          maxRetries: 0,
+        });
+
+      await sleep(500);
       console.log('Your transaction signature', tx);
     } catch (e) {
       console.log(e);
@@ -142,16 +156,13 @@ describe('infuzed', () => {
           controller: state,
           nftMint: nftMint.publicKey,
           infusedAccount,
+          strategy: holdingAccount,
           feesAccount: feesAccount,
+          priceFeed: new PublicKey(
+            'HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J'
+          ),
         })
-        .remainingAccounts([
-          {
-            pubkey: holdingAccount,
-            isWritable: true,
-            isSigner: false,
-          },
-        ])
-        .rpc({ commitment: 'confirmed' });
+        .rpc({ skipPreflight: true, commitment: 'confirmed' });
 
       const txTwo = await program.methods
         .infuse(new BN(2))
@@ -159,16 +170,13 @@ describe('infuzed', () => {
           controller: state,
           nftMint: nftMint.publicKey,
           infusedAccount,
+          strategy: holdingAccount,
           feesAccount: feesAccount,
+          priceFeed: new PublicKey(
+            'HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J'
+          ),
         })
-        .remainingAccounts([
-          {
-            pubkey: holdingAccount,
-            isWritable: true,
-            isSigner: false,
-          },
-        ])
-        .rpc({ commitment: 'confirmed' });
+        .rpc({ skipPreflight: true, commitment: 'confirmed' });
 
       console.log('Your transaction signature', tx);
       console.log('Your transaction signature 2', txTwo);
@@ -279,5 +287,47 @@ describe('infuzed', () => {
       total,
       'The total infused amount is greater than 0'
     ).to.be.greaterThan(0);
+  });
+
+  it('redeem display msg test', async () => {
+    let strategy = await program.account.strategyAccount.fetch(
+      holdingAccount
+    );
+
+    const redeemBalanceBefore = await provider.connection.getBalance(
+      offseting_wallet.publicKey
+    );
+    const strategyPdaBalanceBefore =
+      await provider.connection.getBalance(holdingAccount);
+
+    const tx = await program.methods
+      .redeem()
+      .accounts({
+        controller: state,
+        strategy: holdingAccount,
+        redeemAddress: offseting_wallet.publicKey,
+      })
+      .rpc({
+        skipPreflight: true,
+        commitment: 'confirmed',
+      });
+
+    console.log('Your transaction: ', tx);
+
+    const redeemBalanceAfter = await provider.connection.getBalance(
+      offseting_wallet.publicKey
+    );
+
+    const strategyPdaBalanceAfter =
+      await provider.connection.getBalance(holdingAccount);
+
+    expect(
+      strategyPdaBalanceBefore,
+      'The strategy pda should be greater before redeem'
+    ).to.be.greaterThan(strategyPdaBalanceAfter);
+    expect(
+      redeemBalanceAfter,
+      'The redeem account should be greater after the redeem call'
+    ).to.be.greaterThan(redeemBalanceBefore);
   });
 });

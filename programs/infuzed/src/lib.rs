@@ -17,8 +17,8 @@ pub mod infuzed {
         initialize_handler(ctx)
     }
 
-    pub fn add_strategy(ctx: Context<AddStrategy>, weight: u8, strategy_id: u64) -> Result<()> {
-        add_strategy_handler(ctx, weight, strategy_id)
+    pub fn add_strategy(ctx: Context<AddStrategy>, weight: u8) -> Result<()> {
+        add_strategy_handler(ctx, weight)
     }
 
     pub fn infuse<'info>(
@@ -26,5 +26,9 @@ pub mod infuzed {
         amount: u64,
     ) -> Result<()> {
         infuse_handler(ctx, amount)
+    }
+
+    pub fn redeem(ctx: Context<RedeemStrategy>) -> Result<()> {
+        redeem_strategy_handler(ctx)
     }
 }
