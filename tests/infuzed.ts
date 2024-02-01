@@ -59,14 +59,19 @@ describe('infuzed', () => {
     program.programId
   );
 
+  const [feesAccount] = PublicKey.findProgramAddressSync(
+    [utils.bytes.utf8.encode('fees')],
+    program.programId
+  );
+
   // const holdingAccount = new anchor.web3.Keypair();
   const holdingAccount_ = new PublicKey(
     '6ACx2p98pF7m58GYZViCtv4sxYED9Yj5HDcMZk6BR1FK'
   );
   // const feesAccount = new anchor.web3.Keypair();
-  const feesAccount = new PublicKey(
-    '735WcMTFNG3qXQat7VP2uxMpSvts969xg5vnKPiDpsp9'
-  ); //735WcMTFNG3qXQat7VP2uxMpSvts969xg5vnKPiDpsp9
+  // const feesAccount = new PublicKey(
+  //   '735WcMTFNG3qXQat7VP2uxMpSvts969xg5vnKPiDpsp9'
+  // ); //735WcMTFNG3qXQat7VP2uxMpSvts969xg5vnKPiDpsp9
   const feedStalenessThreshold = new BN(10000);
   const nftMint = Keypair.generate();
 
@@ -118,7 +123,7 @@ describe('infuzed', () => {
           strategyAuthority: provider.publicKey,
           redeemAddress: offseting_wallet.publicKey,
           priceFeed: new PublicKey(
-            'HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J'
+            '5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7'
           ),
         })
         .rpc({
@@ -159,7 +164,7 @@ describe('infuzed', () => {
           strategy: holdingAccount,
           feesAccount: feesAccount,
           priceFeed: new PublicKey(
-            'HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J'
+            '5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7'
           ),
         })
         .rpc({ skipPreflight: true, commitment: 'confirmed' });
@@ -173,7 +178,7 @@ describe('infuzed', () => {
           strategy: holdingAccount,
           feesAccount: feesAccount,
           priceFeed: new PublicKey(
-            'HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J'
+            '5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7'
           ),
         })
         .rpc({ skipPreflight: true, commitment: 'confirmed' });

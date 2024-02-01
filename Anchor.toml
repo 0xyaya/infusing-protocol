@@ -22,4 +22,4 @@ url = "https://devnet.helius-rpc.com/?api-key=0fe5333d-4590-437f-9a0e-4c3250aff8
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
 [[test.validator.clone]]
-address = "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J" #BTC_USD Price feed
+address = "5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7" #BTC_USD Price feed
